@@ -1,0 +1,4 @@
+{
+  "collections": ["heroes", "villains"],
+  "itemsPerCollection": 4
+}
