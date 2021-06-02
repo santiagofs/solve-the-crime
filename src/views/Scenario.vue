@@ -18,9 +18,9 @@ export default defineComponent({
     const level = await Level.forge(1);
     console.log(level);
 
-    const a = new Set(["a", "b", "c"]);
-    const b = new Set(["a", "c", "b"]);
-    console.log(a == b, _.isEqual(a, b));
+    // const a = new Set(["a", "b", "c"]);
+    // const b = new Set(["a", "c", "b"]);
+    // console.log(a == b, _.isEqual(a, b));
     return {};
   },
 });

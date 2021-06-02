@@ -1,28 +1,25 @@
 import _ from "lodash";
-import Room from "./room";
-import Item from "./item";
+// import Room from "./room";
+// import Item from "./item";
 
-interface ruleParam {
-  room: Room;
-  item: Item;
-}
+import { tRuleConfig } from "./types";
 
-export class Rule {
+export default class Rule {
   axis: "room" | "floor";
   distance: number; // modify to accecpt this as not defined '?'
-  itemA: Item;
-  itemB: Item;
+  itemA: string;
+  itemB: string;
 
-  constructor(a: ruleParam, b: ruleParam) {
+  constructor(a: tRuleConfig, b: tRuleConfig) {
     this.axis =
-      a.room.floor === b.room.floor
+      a.coord.floor === b.coord.floor
         ? "room"
-        : ((a.room.room === b.room.room
+        : ((a.coord.room === b.coord.room
             ? "floor"
             : _.sample(["room", "floor"])) as "room" | "floor");
-    const distance = b.room[this.axis] - a.room[this.axis];
-    const [A, B]: [Item, Item] =
-      distance >= 0 ? [a.item, b.item] : [b.item, a.item];
+    const distance = b.coord[this.axis] - a.coord[this.axis];
+    const [A, B]: [string, string] =
+      distance >= 0 ? [a.name, b.name] : [b.name, a.name];
 
     this.itemA = A;
     this.itemB = B;

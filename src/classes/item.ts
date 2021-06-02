@@ -1,4 +1,5 @@
 // Items are anything that can be found in a room: a hero, a villain, a weapon, a motive, etc...
+import { tItemConfig } from "./types";
 
 export default class Item {
   name: string; // the display name of the item
@@ -11,7 +12,7 @@ export default class Item {
     this.parent = "";
   }
 
-  static async forge(config: [string, string]) {
+  static async forge(config: tItemConfig) {
     const icon: string = await import("@/assets/icons/" + config[1]).then(
       (module) => module.default
     );

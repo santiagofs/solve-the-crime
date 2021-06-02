@@ -1,9 +1,9 @@
 // A group of items related by type: heroes, villains, weapons, motives, etc...
 import _ from "lodash";
-import Item from "./item";
-import { computed } from "vue";
 
-export type tCollectionConfig = [[string, string]];
+import { computed } from "vue";
+import { tCollectionConfig } from "./types";
+import Item from "./item";
 
 export default class Collection {
   name: string;
@@ -15,17 +15,19 @@ export default class Collection {
       item.parent = this.name; // use a key instead of binding the collection object to avoid circular references in render
       return item;
     });
-
-    console.log();
     //this.itemNames = computed(() => this.items.map(item => item.name)) as unknown as string[]
     // this.solution = _.shuffle(this.items)[0] // this is only for the second part, once we know what element is in which room
   }
 
   static async forge(collectionName: string) {
     const items: Item[] = [];
-    const collectionConfig = (await import(
-      `@/config/collections/${collectionName}.json`
-    ).then((module) => module.default)) as tCollectionConfig;
+    const collectionConfig: tCollectionConfig = (
+      await import(`@/config/collections/${collectionName}.ts`)
+    ).default;
+
+    // const collectionConfig = (await import(
+    //   `@/config/collections/${collectionName}.json`
+    // ).then((module) => module.default)) as tCollectionConfig;
 
     for (const itemConfig of collectionConfig) {
       items.push(await Item.forge(itemConfig));

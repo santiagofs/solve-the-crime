@@ -1,12 +1,10 @@
 // Levels are responsible for loading the scenario configuration and setting it up
 import _ from "lodash";
 
+import { tLevelConfig } from "./types";
+
 import Collection from "./collection";
 import Solution from "./solution";
-export interface iLevelConfig {
-  collections: string;
-  itemsPerCollection: number;
-}
 
 export default class Level {
   level: number;
@@ -42,9 +40,12 @@ export default class Level {
   }
 
   static async forge(level: number) {
-    const levelConfig = (await import(
-      `@/config/levels/level-${_.padStart(level.toString(), 2, "0")}.json`
-    ).then((module) => module.default)) as iLevelConfig;
+    const levelConfig: tLevelConfig = (
+      await import(
+        `@/config/levels/level-${_.padStart(level.toString(), 2, "0")}.ts`
+      )
+    ).default;
+
     const collections: Collection[] = [];
     for (const collectionName of levelConfig.collections) {
       collections.push(await Collection.forge(collectionName));
