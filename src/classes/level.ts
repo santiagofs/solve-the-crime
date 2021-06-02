@@ -19,7 +19,7 @@ export default class Level {
     collections: Collection[],
     itemsPerCollection: number,
     numberOfFloors = 2,
-    roomsPerFloor = 3
+    roomsPerFloor = 2
   ) {
     this.level = level;
     this.collections = collections.map((collection) => {

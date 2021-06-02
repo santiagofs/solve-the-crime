@@ -9,6 +9,9 @@ export type tLevelConfig = {
 };
 
 export type tCoord = { floor: number; room: number };
-export type tSolution = { [itemName: string]: tCoord };
 
+export type tSolutionMap = { [itemName: string]: tCoord[] };
+export type tSolution = { [itemName: string]: tCoord };
 export type tRuleConfig = { name: string; coord: tCoord };
+export type tDistance = number | "?";
+export type tAxis = "room" | "floor";

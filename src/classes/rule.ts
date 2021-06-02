@@ -2,13 +2,13 @@ import _ from "lodash";
 // import Room from "./room";
 // import Item from "./item";
 
-import { tRuleConfig } from "./types";
+import { tRuleConfig, tDistance, tAxis } from "./types";
 
 export default class Rule {
-  axis: "room" | "floor";
-  distance: number; // modify to accecpt this as not defined '?'
-  itemA: string;
-  itemB: string;
+  axis: tAxis;
+  distance: tDistance;
+  a: string;
+  b: string;
 
   constructor(a: tRuleConfig, b: tRuleConfig) {
     this.axis =
@@ -17,12 +17,12 @@ export default class Rule {
         : ((a.coord.room === b.coord.room
             ? "floor"
             : _.sample(["room", "floor"])) as "room" | "floor");
-    const distance = b.coord[this.axis] - a.coord[this.axis];
-    const [A, B]: [string, string] =
-      distance >= 0 ? [a.name, b.name] : [b.name, a.name];
 
-    this.itemA = A;
-    this.itemB = B;
-    this.distance = Math.abs(distance); // _.sample([ Math.abs(distance), '?'])
+    const distance = b.coord[this.axis] - a.coord[this.axis];
+
+    [this.a, this.b] = distance >= 0 ? [a.name, b.name] : [b.name, a.name];
+    const options: tDistance[] = [Math.abs(distance)];
+    if (distance !== 0) options.push("?");
+    this.distance = _.sample(options) as tDistance; //  // _.sample([ Math.abs(distance), '?'])
   }
 }
