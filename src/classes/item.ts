@@ -18,4 +18,8 @@ export default class Item {
     );
     return new Item(config[0], icon);
   }
+
+  clone() {
+    return new Item(this.name, this.icon);
+  }
 }

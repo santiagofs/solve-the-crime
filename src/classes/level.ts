@@ -26,17 +26,15 @@ export default class Level {
       return collection.shuffle().truncate(itemsPerCollection);
     });
 
-    const allItemNames = this.collections.reduce(
-      (prev: string[], collection: Collection) => {
-        return [...prev, ...collection.itemNames];
-      },
-      []
-    );
     this.itemsPerCollection = itemsPerCollection;
     this.numberOfFloors = numberOfFloors;
     this.roomsPerFloor = roomsPerFloor;
 
-    this.solution = new Solution(allItemNames, numberOfFloors, roomsPerFloor);
+    this.solution = new Solution(
+      this.collections,
+      numberOfFloors,
+      roomsPerFloor
+    );
   }
 
   static async forge(level: number) {

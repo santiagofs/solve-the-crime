@@ -8,7 +8,7 @@ import Item from "./item";
 export default class Collection {
   name: string;
   items: Item[];
-  private _itemNames: string[] = [];
+
   constructor(name: string, items: Item[] = []) {
     this.name = name;
     this.items = items.map((item) => {
@@ -55,5 +55,11 @@ export default class Collection {
     // if (ndx === -1)
     //   throw `item '${itemName}' not found int collection '${this.name}'`
     // this.items.splice(ndx, 1)
+  }
+
+  clone() {
+    // const items = this.items.map(item => item.clone())
+    // Items don't need to be cloned, they are just for display and will keep the same state always
+    return new Collection(this.name, [...this.items]);
   }
 }

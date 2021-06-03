@@ -8,10 +8,11 @@ export type tLevelConfig = {
   itemsPerCollection: number;
 };
 
-export type tCoord = { floor: number; room: number };
+export type tCoord = { x: number; y: number };
 
 export type tSolutionMap = { [itemName: string]: tCoord[] };
+
 export type tSolution = { [itemName: string]: tCoord };
 export type tRuleConfig = { name: string; coord: tCoord };
 export type tDistance = number | "?";
-export type tAxis = "room" | "floor";
+export type tAxis = "x" | "y";

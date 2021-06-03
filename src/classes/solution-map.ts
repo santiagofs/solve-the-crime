@@ -3,11 +3,18 @@
 // once each item is present in only one room, the solution attempt can be compared with the real solution
 
 import _ from "lodash";
-import { tCoord, tSolution, tSolutionMap, tAxis } from "./types";
+import {
+  tCoord,
+  tSolution,
+  tSolutionMap,
+  tSolutionReverseMap,
+  tAxis,
+} from "./types";
 import type Rule from "./rule";
 
 export default class SolutionMap {
   _map: tSolutionMap;
+  _reverseMap: tSolutionReverseMap;
   // _unsolved: string[];
   allItems: string[];
 
@@ -15,10 +22,11 @@ export default class SolutionMap {
     const allRooms: tCoord[] = [];
     this.allItems = [...itemNames];
     this._map = {};
+    this._reverseMap = {};
 
-    for (let floor = 0; floor < numberOfFloors; floor++) {
+    for (let x = 0; x < numberOfFloors; x++) {
       for (let room = 0; room < roomsPerFloor; room++) {
-        allRooms.push({ floor, room });
+        allRooms.push({ x, room });
       }
     }
     for (const name of itemNames) {
@@ -26,9 +34,9 @@ export default class SolutionMap {
     }
   }
 
-  // static getKey (coord: tCoord): string {
-  //   return `${coord.floor.toString()}:${coord.room.toString()}`
-  // }
+  static makeKey(coord: tCoord): string {
+    return `${coord.x.toString()}:${coord.room.toString()}`;
+  }
 
   get() {
     return this._map;
@@ -132,7 +140,7 @@ export default class SolutionMap {
   solution(): tSolution {
     const attempt: tSolution = {};
     for (const name in this._map) {
-      attempt[name] = this._map[name][0] || { floor: -1, room: -1 };
+      attempt[name] = this._map[name][0] || { x: -1, room: -1 };
     }
     return attempt;
   }

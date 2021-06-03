@@ -12,11 +12,11 @@ export default class Rule {
 
   constructor(a: tRuleConfig, b: tRuleConfig) {
     this.axis =
-      a.coord.floor === b.coord.floor
+      a.coord.x === b.coord.x
         ? "room"
-        : ((a.coord.room === b.coord.room
-            ? "floor"
-            : _.sample(["room", "floor"])) as "room" | "floor");
+        : ((a.coord.room === b.coord.room ? "x" : _.sample(["room", "x"])) as
+            | "room"
+            | "x");
 
     const distance = b.coord[this.axis] - a.coord[this.axis];
 
