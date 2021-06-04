@@ -9,15 +9,15 @@
         </tr>
       </table>
     </div>
-
-    <!-- <div class="sc-scene__rules">
+    {{ level.solution.rules }}
+    <div class="sc-scene__rules">
       <rule
-        v-for="(rule, ndx) in scenario.solution.rules"
+        v-for="(rule, ndx) in level.solution.rules"
         :key="ndx"
         :rule="rule"
         @click="applyRule(rule)"
       />
-    </div> -->
+    </div>
     <!-- <h1>{{isUnique}}</h1>
     <button @click="createRule">Create Rule</button>
     <button @click="createRules">Create Rules</button>
@@ -29,13 +29,13 @@
 import { defineComponent, PropType, computed } from "vue";
 
 import Room from "@/components/Room.vue";
-// import Rule from "@/components/Rule.vue";
+import Rule from "@/components/Rule.vue";
 import type Level from "@/classes/level";
 //import { Level, Scenario } from '../models'
 
 export default defineComponent({
   name: "Board",
-  components: { Room },
+  components: { Room, Rule },
   props: {
     level: { type: Object as PropType<Level>, default: null },
   },

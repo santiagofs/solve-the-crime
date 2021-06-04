@@ -3,20 +3,21 @@ import _ from "lodash";
 // import Item from "./item";
 
 import { tRuleConfig, tDistance, tAxis } from "./types";
+import type Item from "./item";
 
 export default class Rule {
   axis: tAxis;
   distance: tDistance;
-  a: string;
-  b: string;
+  a: Item;
+  b: Item;
 
   constructor(a: tRuleConfig, b: tRuleConfig) {
     this.axis =
-      a.coord.x === b.coord.x
-        ? "room"
-        : ((a.coord.room === b.coord.room ? "x" : _.sample(["room", "x"])) as
-            | "room"
-            | "x");
+      a.coord.x === b.coord.x // in the same column?
+        ? "y" // measure the distant in rows
+        : ((a.coord.y === b.coord.y // in the same row?
+            ? "x" // measure the distant in columns
+            : _.sample(["y", "x"])) as tAxis); // choose any
 
     const distance = b.coord[this.axis] - a.coord[this.axis];
 

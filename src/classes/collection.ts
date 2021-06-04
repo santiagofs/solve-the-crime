@@ -46,7 +46,10 @@ export default class Collection {
   }
 
   get itemNames(): string[] {
-    return computed(() => this.items.map((item) => item.name)).value;
+    return this.items.map((item) => item.name);
+  }
+  get itemsFullName(): string[] {
+    return this.items.map((item) => `${this.name}.${item.name}`);
   }
 
   removeItem(name: string) {

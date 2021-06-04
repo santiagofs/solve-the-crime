@@ -10,7 +10,7 @@
       <span
         v-for="item in collection.items"
         :key="item.name"
-        :class="{ 'is-active': true }"
+        :class="{ 'is-active': false }"
         class="sc-room__collection-item"
       >
         <icon :src="item.icon" />

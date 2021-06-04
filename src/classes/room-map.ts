@@ -49,6 +49,8 @@ export default class RoomMap {
         rooms[y][x] = this._rooms[y][x].map((collection) => collection.clone());
       }
     }
+    clone._rooms = rooms;
+    return clone;
   }
   get rooms() {
     return this._rooms;

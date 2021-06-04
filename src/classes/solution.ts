@@ -1,9 +1,8 @@
 import _ from "lodash";
-import SolutionMap from "./solution-map";
 import { tSolution, tCoord, tRuleConfig } from "./types";
 import Rule from "./rule";
 import type Collection from "./collection";
-import RoomMap from "./room-map";
+import RoomMap, { tRoomMap } from "./room-map";
 
 export default class Solution {
   itemNames: string[];
@@ -12,6 +11,7 @@ export default class Solution {
   rules: Rule[];
   map: RoomMap; //SolutionMap;
   collections: Collection[];
+  solved: boolean;
 
   constructor(
     collections: Collection[],
@@ -24,42 +24,40 @@ export default class Solution {
     this.unsolved = [];
     this.map = new RoomMap(collections, numberOfFloors, roomsPerFloor);
     this.itemNames = [];
+    this.solved = false;
 
-    // this.itemNames = collections.reduce(
-    //   (prev: string[], collection: Collection) => {
-    //     return [...prev, ...collection.itemNames];
-    //   },
-    //   []
-    // );
-    // this.unsolved = [... this.itemNames];
+    for (const collection of collections) {
+      for (const fullName of collection.itemsFullName) {
+        this.itemNames.push(fullName);
+      }
+    }
+    this.unsolved = [...this.itemNames];
 
-    // for (const name of this.itemNames) {
-    //   this.solution[name] = {
-    //     x: _.random(0, numberOfFloors - 1),
-    //     room: _.random(0, roomsPerFloor - 1),
-    //   };
-    // }
-
-    // this.map = new SolutionMap(this.itemNames, numberOfFloors, roomsPerFloor);
-    // console.log("solution constructor");
-    // this.createRules();
+    // get a random solution
+    for (const name of this.itemNames) {
+      this.solution[name] = {
+        x: _.random(0, numberOfFloors - 1),
+        y: _.random(0, roomsPerFloor - 1),
+      };
+    }
+    this.rules = this.createRules();
   }
 
   // isSolution(attemp: tSolution) {
   //   return _.isEqual(this.solution, attemp);
   // }
 
-  // get unsolvedItem() {
-  //   const item = _.sample(this.unsolved);
-  //   if (item === undefined) throw "Don't ask what you dont have";
-  //   return item;
-  // }
+  get unsolvedItem() {
+    const item = _.sample(this.unsolved);
+    if (item === undefined) throw "Don't ask what you dont have";
+    return item;
+  }
 
-  // get itemPair(): [string, string] {
-  //   const a = this.unsolvedItem;
-  //   const b = _.sample(_.without(this.itemNames, a)) as string;
-  //   return [a, b];
-  // }
+  get itemPair(): [string, string] {
+    const a = this.unsolvedItem;
+    const b = _.sample(_.without(this.itemNames, a)) as string;
+    return [a, b];
+  }
 
   // createRule(tempMap: SolutionMap): Rule {
   //   const maxTries = 1000;
@@ -80,39 +78,49 @@ export default class Solution {
   //   throw "No valid rule found after too much tries";
   // }
 
-  // createRules() {
-  //   const tempMap = this.map.clone();
-  //   const rules: Rule[] = [];
-  //   const maxTries = 1000;
-  //   let i = 0;
-  //   console.log("the so lution", this.solution);
-  //   // console.log(JSON.parse(JSON.stringify(tempMap.get())));
-  //   do {
-  //     i++;
-  //     console.log("i", i);
-  //     const [a, b] = this.itemPair;
-  //     // we look in the solution for those elements and create a rule
-  //     const rule = new Rule(
-  //       { name: a, coord: this.solution[a] },
-  //       { name: b, coord: this.solution[b] }
-  //     );
+  createRules() {
+    const tempMap = this.map.clone();
+    const rules: Rule[] = [];
+    const maxTries = 20;
+    let i = 0;
+    console.log("the solution", this.solution);
+    //   // console.log(JSON.parse(JSON.stringify(tempMap.get())));
+    do {
+      i++;
+      // get a pair of random items
+      // the first one has not yet an unique solution
+      // the second one can be any
+      const [a, b] = this.itemPair;
 
-  //     if (tempMap.applyRule(rule)) {
-  //       rules.push(rule);
-  //       if (tempMap.item(rule.a).length === 1) {
-  //         _.pull(this.unsolved, rule.a);
-  //       }
-  //       if (tempMap.item(rule.b).length === 1) {
-  //         _.pull(this.unsolved, rule.b);
-  //       }
-  //       tempMap.enforceRules(rules);
-  //     }
-  //   } while (!tempMap.solved && i < maxTries);
+      // create a rule using the element pair
+      const rule = new Rule(
+        { name: a, coord: this.solution[a] },
+        { name: b, coord: this.solution[b] }
+      );
 
-  //   console.log(
-  //     "I shouod have a solution",
-  //     this.isSolution(tempMap.solution())
-  //   );
-  //   console.log(rules);
-  // }
+      if (this.applyRule(rule, tempMap)) {
+        rules.push(rule);
+        //       if (tempMap.item(rule.a).length === 1) {
+        //         _.pull(this.unsolved, rule.a);
+        //       }
+        //       if (tempMap.item(rule.b).length === 1) {
+        //         _.pull(this.unsolved, rule.b);
+        //       }
+        //       tempMap.enforceRules(rules);
+      }
+    } while (!this.solved && i < maxTries);
+
+    //   console.log(
+    //     "I shouod have a solution",
+    //     this.isSolution(tempMap.solution())
+    //   );
+    //   console.log(rules);
+    return rules;
+  }
+
+  applyRule(rule: Rule, otherMap?: RoomMap): boolean {
+    const map = otherMap || this.map;
+
+    return true;
+  }
 }
