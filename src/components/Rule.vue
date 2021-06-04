@@ -1,11 +1,11 @@
 <template>
   <div class="sc-rule" :class="[mode]">
     <div class="sc-rule__item sc-rule__item-a">
-      <icon :src="rule.itemA.icon" />
+      <icon :src="rule.a.icon" />
     </div>
     <div class="sc-rule__distance">{{ rule.distance }}</div>
     <div class="sc-rule__item sc-rule__item-b">
-      <icon :src="rule.itemB.icon" />
+      <icon :src="rule.b.icon" />
     </div>
   </div>
 </template>
@@ -19,7 +19,7 @@ export default defineComponent({
   components: { Icon },
   setup(props) {
     const mode = computed(() =>
-      props.rule.axis === "floor" ? "is-horizontal" : "is-vertical"
+      props.rule.axis === "y" ? "is-horizontal" : "is-vertical"
     );
     return {
       mode,

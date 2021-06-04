@@ -2,6 +2,8 @@ import _ from "lodash";
 import { tSolution, tCoord, tRuleConfig } from "./types";
 import Rule from "./rule";
 import type Collection from "./collection";
+import type Collections from "./collections";
+import type Item from "./item";
 import RoomMap, { tRoomMap } from "./room-map";
 
 export default class Solution {
@@ -10,14 +12,10 @@ export default class Solution {
   solution: tSolution; // a solution is a dictionary with item names as keys and a coordinate as value
   rules: Rule[];
   map: RoomMap; //SolutionMap;
-  collections: Collection[];
+  collections: Collections;
   solved: boolean;
 
-  constructor(
-    collections: Collection[],
-    numberOfFloors = 2,
-    roomsPerFloor = 2
-  ) {
+  constructor(collections: Collections, numberOfFloors = 2, roomsPerFloor = 2) {
     this.solution = {};
     this.rules = [];
     this.collections = collections;
@@ -26,7 +24,8 @@ export default class Solution {
     this.itemNames = [];
     this.solved = false;
 
-    for (const collection of collections) {
+    for (const collection of collections.toArray()) {
+      console.log(collection);
       for (const fullName of collection.itemsFullName) {
         this.itemNames.push(fullName);
       }
@@ -53,9 +52,11 @@ export default class Solution {
     return item;
   }
 
-  get itemPair(): [string, string] {
-    const a = this.unsolvedItem;
-    const b = _.sample(_.without(this.itemNames, a)) as string;
+  get itemPair(): [Item, Item] {
+    const a = this.collections.item(this.unsolvedItem);
+    const b = this.collections.item(
+      _.sample(_.without(this.itemNames, a.fullName)) as string
+    );
     return [a, b];
   }
 
@@ -79,7 +80,9 @@ export default class Solution {
   // }
 
   createRules() {
+    console.log(this.map);
     const tempMap = this.map.clone();
+    console.log(tempMap);
     const rules: Rule[] = [];
     const maxTries = 20;
     let i = 0;
@@ -94,8 +97,8 @@ export default class Solution {
 
       // create a rule using the element pair
       const rule = new Rule(
-        { name: a, coord: this.solution[a] },
-        { name: b, coord: this.solution[b] }
+        { item: a, coord: this.solution[a.fullName] },
+        { item: b, coord: this.solution[b.fullName] }
       );
 
       if (this.applyRule(rule, tempMap)) {
@@ -120,7 +123,23 @@ export default class Solution {
 
   applyRule(rule: Rule, otherMap?: RoomMap): boolean {
     const map = otherMap || this.map;
+    const clone = map.clone(); // will use this to check if the map has changed after applying the rule
 
+    // apply the rule
+    const distance = rule.distance;
+    const axis = rule.axis;
+
+    if (distance === 0) {
+      // // coordinates in both items must match, which is the intersection of both arrays
+      // const intersection = this.intersect(coordsA, coordsB);
+      // this._map[rule.a] = [...intersection];
+      // this._map[rule.b] = [...intersection];
+      return false;
+    } else if (distance === "?") {
+      return true;
+    } else {
+      return true;
+    }
     return true;
   }
 }

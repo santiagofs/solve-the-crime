@@ -17,5 +17,9 @@ export default defineComponent({
 .sc-icon {
   height: 60px;
   width: 60px;
+  padding: 5px;
+  border-radius: 4px;
+  // box-shadow: 2px 2px 2px rgba(0, 0, 0, .2);
+  cursor: pointer;
 }
 </style>

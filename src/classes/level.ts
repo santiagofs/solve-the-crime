@@ -1,14 +1,15 @@
 // Levels are responsible for loading the scenario configuration and setting it up
 import _ from "lodash";
 
-import { tLevelConfig } from "./types";
+import { tLevelConfig, tCollections } from "./types";
 
 import Collection from "./collection";
+import Collections from "./collections";
 import Solution from "./solution";
 
 export default class Level {
   level: number;
-  collections: Collection[];
+  collections: Collections;
   itemsPerCollection: number;
   numberOfFloors: number;
   roomsPerFloor: number;
@@ -22,9 +23,7 @@ export default class Level {
     roomsPerFloor = 2
   ) {
     this.level = level;
-    this.collections = collections.map((collection) => {
-      return collection.shuffle().truncate(itemsPerCollection);
-    });
+    this.collections = new Collections(collections, itemsPerCollection);
 
     this.itemsPerCollection = itemsPerCollection;
     this.numberOfFloors = numberOfFloors;

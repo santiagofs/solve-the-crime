@@ -1,9 +1,8 @@
 import _ from "lodash";
 // import Room from "./room";
-// import Item from "./item";
+import Item from "./item";
 
 import { tRuleConfig, tDistance, tAxis } from "./types";
-import type Item from "./item";
 
 export default class Rule {
   axis: tAxis;
@@ -21,7 +20,7 @@ export default class Rule {
 
     const distance = b.coord[this.axis] - a.coord[this.axis];
 
-    [this.a, this.b] = distance >= 0 ? [a.name, b.name] : [b.name, a.name];
+    [this.a, this.b] = distance >= 0 ? [a.item, b.item] : [b.item, a.item];
     const options: tDistance[] = [Math.abs(distance)];
     if (distance !== 0) options.push("?");
     this.distance = _.sample(options) as tDistance; //  // _.sample([ Math.abs(distance), '?'])

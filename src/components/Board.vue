@@ -9,7 +9,7 @@
         </tr>
       </table>
     </div>
-    {{ level.solution.rules }}
+
     <div class="sc-scene__rules">
       <rule
         v-for="(rule, ndx) in level.solution.rules"
@@ -40,7 +40,7 @@ export default defineComponent({
     level: { type: Object as PropType<Level>, default: null },
   },
   setup(props) {
-    console.log(props);
+    console.log(props.level.solution);
     const grid = computed(() => {
       if (!props.level) return [];
       return props.level.solution.map.rooms;

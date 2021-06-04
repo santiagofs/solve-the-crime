@@ -1,16 +1,14 @@
 import _ from "lodash";
-import { tCoord, tSolution, tAxis } from "./types";
+import { tCoord, tCollections, tSolution, tAxis } from "./types";
 import type Rule from "./rule";
 import Room from "./room";
 import type Collection from "./collection";
+import Collections from "./collections";
 
-export type tRoomMap = Collection[][][];
+export type tRoomMap = Collections[][];
 
 export default class RoomMap {
   _rooms: tRoomMap = [];
-  collections: Collection[] = [];
-  numberOfFloors: number;
-  roomsPerFloor: number;
 
   static getRoomKey(coord: tCoord) {
     return `${coord.y}:${coord.x}`;
@@ -20,33 +18,27 @@ export default class RoomMap {
   }
 
   constructor(
-    collections: Collection[],
-    numberOfFloors = 3,
-    roomsPerFloor = 3
+    collections?: Collections,
+    numberOfFloors?: number,
+    roomsPerFloor?: number
   ) {
-    this.collections = collections;
-    this.numberOfFloors = numberOfFloors;
-    this.roomsPerFloor = roomsPerFloor;
-
-    for (let y = 0; y < numberOfFloors; y++) {
-      this._rooms[y] = [];
-      for (let x = 0; x < roomsPerFloor; x++) {
-        this._rooms[y][x] = collections.map((collection) => collection.clone());
+    if (collections && numberOfFloors && roomsPerFloor) {
+      for (let y = 0; y < numberOfFloors; y++) {
+        this._rooms[y] = [];
+        for (let x = 0; x < roomsPerFloor; x++) {
+          this._rooms[y][x] = collections.clone();
+        }
       }
     }
   }
 
   clone() {
-    const clone = new RoomMap(
-      this.collections,
-      this.numberOfFloors,
-      this.roomsPerFloor
-    );
+    const clone = new RoomMap();
     const rooms: tRoomMap = [];
-    for (let y = 0; y < this._rooms.length - 1; y++) {
+    for (let y = 0; y < this._rooms.length; y++) {
       rooms[y] = [];
-      for (let x = 0; x < this._rooms[y].length - 1; x++) {
-        rooms[y][x] = this._rooms[y][x].map((collection) => collection.clone());
+      for (let x = 0; x < this._rooms[y].length; x++) {
+        rooms[y][x] = this._rooms[y][x].clone();
       }
     }
     clone._rooms = rooms;

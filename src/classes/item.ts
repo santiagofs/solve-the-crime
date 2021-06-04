@@ -4,12 +4,11 @@ import { tItemConfig } from "./types";
 export default class Item {
   name: string; // the display name of the item
   icon: string;
-  parent: string; // the collection name
+  collectionName = "";
 
   constructor(name: string, icon: string) {
     this.name = name;
     this.icon = icon;
-    this.parent = "";
   }
 
   static async forge(config: tItemConfig) {
@@ -17,6 +16,10 @@ export default class Item {
       (module) => module.default
     );
     return new Item(config[0], icon);
+  }
+
+  get fullName() {
+    return `${this.collectionName}.${this.name}`;
   }
 
   clone() {

@@ -1,10 +1,11 @@
 <template>
   <div class="sc-room">
     <div>{{ x }}, {{ y }}</div>
+
     <!-- <div>{{room.floorNumber}}, {{room.roomNumber}}</div> -->
     <div
       class="sc-room__collection"
-      v-for="(collection, ndx) in room"
+      v-for="(collection, ndx) in collections"
       :key="ndx"
     >
       <span
@@ -19,21 +20,26 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, computed } from "vue";
 import _ from "lodash";
-import { tCoord } from "@/classes/types";
+import type Coolections from "@/classes/collections";
 import Icon from "./Icon.vue";
 
 export default defineComponent({
   name: "Room",
   components: { Icon },
   props: {
-    room: Object as PropType<tCoord>,
+    room: Object as PropType<Coolections>,
     x: Number,
     y: Number,
   },
-  setup() {
-    return {};
+  setup(props) {
+    const collections = computed(() =>
+      props.room ? props.room.toArray() : []
+    );
+    return {
+      collections,
+    };
   },
 });
 

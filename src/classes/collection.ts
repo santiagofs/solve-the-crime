@@ -12,7 +12,7 @@ export default class Collection {
   constructor(name: string, items: Item[] = []) {
     this.name = name;
     this.items = items.map((item) => {
-      item.parent = this.name; // use a key instead of binding the collection object to avoid circular references in render
+      item.collectionName = this.name; // use a key instead of binding the collection object to avoid circular references in render
       return item;
     });
     //this.itemNames = computed(() => this.items.map(item => item.name)) as unknown as string[]
@@ -30,7 +30,8 @@ export default class Collection {
     // ).then((module) => module.default)) as tCollectionConfig;
 
     for (const itemConfig of collectionConfig) {
-      items.push(await Item.forge(itemConfig));
+      const item = await Item.forge(itemConfig);
+      items.push(item);
     }
     return new Collection(collectionName, items);
   }
@@ -49,7 +50,14 @@ export default class Collection {
     return this.items.map((item) => item.name);
   }
   get itemsFullName(): string[] {
-    return this.items.map((item) => `${this.name}.${item.name}`);
+    return this.items.map((item) => item.fullName);
+  }
+
+  item(name: string) {
+    const item = _.find(this.items, { name });
+    if (!item)
+      throw "but I'm still haven't found what I'm looking for :" + name;
+    return item;
   }
 
   removeItem(name: string) {
