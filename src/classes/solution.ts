@@ -5,6 +5,9 @@ import type Collection from "./collection";
 import type Collections from "./collections";
 import type Item from "./item";
 import RoomMap, { tRoomMap } from "./room-map";
+import Room from "./room";
+
+type tIteratorCallback = (x: number, y: number) => void;
 
 export default class Solution {
   itemNames: string[];
@@ -14,12 +17,16 @@ export default class Solution {
   map: RoomMap; //SolutionMap;
   collections: Collections;
   solved: boolean;
+  numberOfFloors: number;
+  roomsPerFloor: number;
 
   constructor(collections: Collections, numberOfFloors = 2, roomsPerFloor = 2) {
     this.solution = {};
     this.rules = [];
     this.collections = collections;
     this.unsolved = [];
+    this.numberOfFloors = numberOfFloors;
+    this.roomsPerFloor = roomsPerFloor;
     this.map = new RoomMap(collections, numberOfFloors, roomsPerFloor);
     this.itemNames = [];
     this.solved = false;
@@ -54,9 +61,11 @@ export default class Solution {
 
   get itemPair(): [Item, Item] {
     const a = this.collections.item(this.unsolvedItem);
+    if (!a) throw "Unsoleved Item not found for item paire";
     const b = this.collections.item(
       _.sample(_.without(this.itemNames, a.fullName)) as string
     );
+    if (!b) throw "Pair Item not found";
     return [a, b];
   }
 
@@ -103,21 +112,22 @@ export default class Solution {
 
       if (this.applyRule(rule, tempMap)) {
         rules.push(rule);
-        //       if (tempMap.item(rule.a).length === 1) {
-        //         _.pull(this.unsolved, rule.a);
-        //       }
-        //       if (tempMap.item(rule.b).length === 1) {
-        //         _.pull(this.unsolved, rule.b);
-        //       }
-        //       tempMap.enforceRules(rules);
+        this.enforceRules(rules, tempMap);
+
+        if (tempMap.coordsByItem(rule.a.fullName).length === 1) {
+          _.pull(this.unsolved, rule.a.fullName);
+        }
+        if (tempMap.coordsByItem(rule.b.fullName).length === 1) {
+          _.pull(this.unsolved, rule.b.fullName);
+        }
       }
     } while (!this.solved && i < maxTries);
 
-    //   console.log(
-    //     "I shouod have a solution",
-    //     this.isSolution(tempMap.solution())
-    //   );
-    //   console.log(rules);
+    console.log(
+      "I shouod have a solution"
+      // this.isSolution(tempMap.solution())
+    );
+    console.log(rules);
     return rules;
   }
 
@@ -134,12 +144,69 @@ export default class Solution {
       // const intersection = this.intersect(coordsA, coordsB);
       // this._map[rule.a] = [...intersection];
       // this._map[rule.b] = [...intersection];
-      return false;
+      console.log(distance);
     } else if (distance === "?") {
-      return true;
+      // boundaries
+      console.log(distance);
+      this._trim(map, rule);
+      console.log(map.snapshot, rule);
     } else {
-      return true;
+      console.log(distance);
     }
-    return true;
+    console.log(
+      map.snapshot,
+      clone.snapshot,
+      _.isEqual(map.snapshot, clone.snapshot)
+    );
+    return _.isEqual(map.snapshot, clone.snapshot);
+  }
+  // we are going to key applying all the rules until the map is not changed anymore
+  enforceRules(rules: Rule[], otherMap?: RoomMap): void {
+    const map = otherMap || this.map;
+    let i = 0;
+    let changed: boolean;
+    do {
+      i++;
+      changed = false;
+      rules.forEach((rule) => {
+        changed = changed || this.applyRule(rule);
+        if (map.coordsByItem(rule.a.fullName).length === 0)
+          throw "Something is going wrong A";
+        if (map.coordsByItem(rule.b.fullName).length === 0)
+          throw "Something is going wrong B";
+      });
+    } while (changed && i < 1000);
+  }
+  _trim(map: RoomMap, rule: Rule) {
+    // really complicated to read :-D
+    // if distance is '?', we only know 'b' items muust be greater than the minimun A on the rule axis
+    // and 'a' items must be lower thant the maximum B
+
+    let minA = 1000,
+      maxB = 0;
+    const validA: tCoord[] = [];
+    const validB: tCoord[] = [];
+    map.iterate((coord, room) => {
+      if (room.hasItem(rule.a.fullName) && coord[rule.axis] < minA)
+        minA = coord[rule.axis];
+      if (room.hasItem(rule.b.fullName) && coord[rule.axis] > maxB)
+        maxB = coord[rule.axis];
+    });
+    map.iterate((coord, room) => {
+      if (coord[rule.axis] >= maxB) room.removeItem(rule.a.fullName);
+      if (coord[rule.axis] <= minA) room.removeItem(rule.b.fullName);
+    });
+
+    // console.log(minA, maxB)
+    // const coordsA = map.coordsByItem(rule.a.fullName)
+    // console.log(coordsA)
+    //return [minA, maxB];
+  }
+  _iterate(callback: tIteratorCallback) {
+    for (let y = 0; y < this.numberOfFloors; y++) {
+      for (let x = 0; x < this.roomsPerFloor; x++) {
+        callback(x, y);
+      }
+    }
   }
 }

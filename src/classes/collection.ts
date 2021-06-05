@@ -53,11 +53,8 @@ export default class Collection {
     return this.items.map((item) => item.fullName);
   }
 
-  item(name: string) {
-    const item = _.find(this.items, { name });
-    if (!item)
-      throw "but I'm still haven't found what I'm looking for :" + name;
-    return item;
+  item(name: string): Item | undefined {
+    return _.find(this.items, { name });
   }
 
   removeItem(name: string) {

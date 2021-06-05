@@ -2,7 +2,7 @@ import _ from "lodash";
 // import Room from "./room";
 import Item from "./item";
 
-import { tRuleConfig, tDistance, tAxis } from "./types";
+import { tRuleConfig, tDistance, tAxis, tCoord } from "./types";
 
 export default class Rule {
   axis: tAxis;
@@ -24,5 +24,11 @@ export default class Rule {
     const options: tDistance[] = [Math.abs(distance)];
     if (distance !== 0) options.push("?");
     this.distance = _.sample(options) as tDistance; //  // _.sample([ Math.abs(distance), '?'])
+  }
+
+  transpose(coord: tCoord, up = true) {
+    if (this.distance === "?") throw "Transpose called for unknown distance";
+    const distance = this.distance * (up ? 1 : -1);
+    return { ...coord, [this.axis]: coord[this.axis] + distance };
   }
 }
