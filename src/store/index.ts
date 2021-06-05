@@ -1,15 +1,18 @@
 import { createStore } from "vuex";
-import type Collection from "../classes/collection";
 
-const state: { level: { collections: Collection[] } } = {
-  level: {
-    collections: [],
-  },
+const state: {
+  collections: { [colName: string]: { [itemName: string]: string } };
+} = {
+  collections: {},
 };
 
 export default createStore({
   state,
-  mutations: {},
+  mutations: {
+    collections(state, collections) {
+      state.collections = collections;
+    },
+  },
   actions: {},
   modules: {},
 });

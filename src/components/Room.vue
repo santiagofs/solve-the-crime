@@ -5,9 +5,10 @@
     <!-- <div>{{room.floorNumber}}, {{room.roomNumber}}</div> -->
     <div
       class="sc-room__collection"
-      v-for="(collection, ndx) in collections"
-      :key="ndx"
+      v-for="collection in room"
+      :key="collection"
     >
+      {{ collection }}
       <span
         v-for="item in collection.items"
         :key="item.name"
@@ -22,23 +23,30 @@
 <script lang="ts">
 import { defineComponent, PropType, computed } from "vue";
 import _ from "lodash";
-import type Coolections from "@/classes/collections";
 import Icon from "./Icon.vue";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "Room",
   components: { Icon },
   props: {
-    room: Object as PropType<Coolections>,
+    room: { type: Object, required: true },
     x: Number,
     y: Number,
   },
   setup(props) {
-    const collections = computed(() =>
-      props.room ? props.room.toArray() : []
-    );
+    const store = useStore();
+    const grid = computed(() => {
+      return props.room.map((value: string) => {
+        const [col, item] = value.split(".");
+        return {
+          icon: store.state.collections[col][item],
+          status: props.room[value],
+        };
+      });
+    });
     return {
-      collections,
+      grid,
     };
   },
 });

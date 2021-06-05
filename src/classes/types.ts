@@ -7,11 +7,6 @@ export type tItemConfig = [string, string];
 export type tCollectionConfig = tItemConfig[];
 export type tCollections = { [collectionName: string]: Collection };
 
-export type tLevelConfig = {
-  collections: string[];
-  itemsPerCollection: number;
-};
-
 export type tCoord = { x: number; y: number };
 
 export type tSolutionMap = { [itemName: string]: tCoord[] };

@@ -95,7 +95,7 @@ export default class RoomMap {
   get snapshot(): tMapSnapshot {
     const ret: tMapSnapshot = {};
     this.iterate((coord, room) => {
-      ret[coorKey(coord)] = room.allItemNames;
+      ret[coorKey(coord)] = [...room.allItemNames];
     });
     return ret;
   }

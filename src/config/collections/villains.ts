@@ -1,6 +1,6 @@
-import { tCollectionConfig } from "../../classes/types";
+import { CollectionConfig } from "../types";
 
-export default <tCollectionConfig>[
+export default <CollectionConfig>[
   ["psycho", "villains/psycho-2.svg"],
   ["alien", "villains/alien-1.svg"],
   ["supervillain", "villains/supervillain.svg"],

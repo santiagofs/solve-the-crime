@@ -2,9 +2,9 @@
   <div class="sc-scene">
     <div class="sc-scene__house">
       <table>
-        <tr v-for="(floor, x) in grid" :key="x">
-          <td v-for="(room, y) in floor" :key="y">
-            <room :x="x" :y="y" :room="room" :solution="level.solution" />
+        <tr v-for="(x, nx) in level.config.boundaries.x" :key="x">
+          <td v-for="(y, ny) in level.config.boundaries.y" :key="y">
+            <room :x="nx" :y="ny" :room="rooms[nx][ny]" />
           </td>
         </tr>
       </table>
@@ -12,7 +12,7 @@
 
     <div class="sc-scene__rules">
       <rule
-        v-for="(rule, ndx) in level.solution.rules"
+        v-for="(rule, ndx) in level.rules"
         :key="ndx"
         :rule="rule"
         @click="applyRule(rule)"
@@ -37,16 +37,14 @@ export default defineComponent({
   name: "Board",
   components: { Room, Rule },
   props: {
-    level: { type: Object as PropType<Level>, default: null },
+    level: { type: Object as PropType<Level> },
+    collections: { type: Object },
   },
   setup(props) {
-    console.log(props.level.solution);
-    const grid = computed(() => {
-      if (!props.level) return [];
-      return props.level.solution.map.rooms;
-    });
+    const rooms = computed(() => (props.level ? props.level.rooms : []));
+
     return {
-      grid,
+      rooms,
     };
   },
   // data() {

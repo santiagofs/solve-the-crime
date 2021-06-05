@@ -1,34 +1,35 @@
 import _ from "lodash";
-// import Room from "./room";
-import Item from "./item";
 
-import { tRuleConfig, tDistance, tAxis, tCoord } from "./types";
+export type Distance = number | "?";
+export type Axis = "x" | "y";
+
+export type RuleItem = {
+  x: number;
+  y: number;
+  name: string;
+};
 
 export default class Rule {
-  axis: tAxis;
-  distance: tDistance;
-  a: Item;
-  b: Item;
+  a: string;
+  b: string;
+  axis: Axis;
+  distance: Distance = 0;
 
-  constructor(a: tRuleConfig, b: tRuleConfig) {
+  constructor(a: RuleItem, b: RuleItem) {
     this.axis =
-      a.coord.x === b.coord.x // in the same column?
+      a.x === b.x // in the same column?
         ? "y" // measure the distant in rows
-        : ((a.coord.y === b.coord.y // in the same row?
+        : ((a.y === b.y // in the same row?
             ? "x" // measure the distant in columns
-            : _.sample(["y", "x"])) as tAxis); // choose any
+            : _.sample(["y", "x"])) as Axis); // choose any
 
-    const distance = b.coord[this.axis] - a.coord[this.axis];
+    const distance = b[this.axis] - a[this.axis];
 
-    [this.a, this.b] = distance >= 0 ? [a.item, b.item] : [b.item, a.item];
-    const options: tDistance[] = [Math.abs(distance)];
+    [this.a, this.b] = distance >= 0 ? [a.name, b.name] : [b.name, a.name];
+    const options: Distance[] = [Math.abs(distance)];
     if (distance !== 0) options.push("?");
-    this.distance = _.sample(options) as tDistance; //  // _.sample([ Math.abs(distance), '?'])
-  }
+    this.distance = _.sample(options) as Distance; //  // _.sample([ Math.abs(distanc
 
-  transpose(coord: tCoord, up = true) {
-    if (this.distance === "?") throw "Transpose called for unknown distance";
-    const distance = this.distance * (up ? 1 : -1);
-    return { ...coord, [this.axis]: coord[this.axis] + distance };
+    // [this.a, this.b] = distance >= 0 ? [a.item, b.item] : [b.item, a.item];
   }
 }

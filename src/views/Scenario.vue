@@ -1,11 +1,12 @@
 <template>
   <h1>Scenario</h1>
 
-  <board :level="level" />
+  <board :level="level" :collections="collections" />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { useStore } from "vuex";
 import _ from "lodash";
 
 import { Level } from "@/classes";
@@ -18,10 +19,35 @@ export default defineComponent({
     Board,
   },
   async setup() {
+    const store = useStore();
     const level = await Level.forge(1);
-    console.log(level);
+    const collections: { [colName: string]: { [itemName: string]: string } } =
+      {};
+    for (const colName of level.collectionNames) {
+      const config: [string, string][] = (
+        await import(`@/config/collections/${colName}.ts`)
+      ).default;
+      collections[colName] = {};
+      for (const item of config) {
+        const icon: string = await import("@/assets/icons/" + item[1]).then(
+          (module) => module.default
+        );
+
+        collections[colName][item[0]] = icon;
+      }
+    }
+    store.commit("collections", collections);
+    console.log(store.state);
+
+    // for (const itemConfig of collectionConfig) {
+    //   const item = await Item.forge(itemConfig);
+    //   items.push(item);
+    // }
+    // return new Collection(collectionName, items);
+
     return {
       level,
+      collections,
     };
   },
 });

@@ -1,28 +1,35 @@
 <template>
   <div class="sc-rule" :class="[mode]">
     <div class="sc-rule__item sc-rule__item-a">
-      <icon :src="rule.a.icon" />
+      <icon :src="iconA" />
     </div>
     <div class="sc-rule__distance">{{ rule.distance }}</div>
     <div class="sc-rule__item sc-rule__item-b">
-      <icon :src="rule.b.icon" />
+      <icon :src="iconB" />
     </div>
   </div>
 </template>
 <script>
 import { defineComponent, computed } from "vue";
 import Icon from "./Icon";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "Rule",
   props: { rule: { type: Object } },
   components: { Icon },
   setup(props) {
-    const mode = computed(() =>
-      props.rule.axis === "y" ? "is-horizontal" : "is-vertical"
-    );
+    const store = useStore();
+    const mode = props.rule.axis === "y" ? "is-horizontal" : "is-vertical";
+    const [colA, itemA] = props.rule.a.split(".");
+    const [colB, itemB] = props.rule.b.split(".");
+
+    const iconA = store.state.collections[colA][itemA];
+    const iconB = store.state.collections[colB][itemB];
     return {
       mode,
+      iconA,
+      iconB,
     };
   },
 });
