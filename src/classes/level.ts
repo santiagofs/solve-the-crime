@@ -20,12 +20,16 @@ export type RoomIteratorCallback = (arg: {
   nameB: string;
 }) => void;
 export type RoomCollectionItem = {
-  name: string;
   icon: string;
+  status: boolean;
+  name: string;
+  fullName: string;
+  matrixKey: string;
 };
-export type RoomCollection = {
-  [];
-};
+export type RoomCollection = { [itemName: string]: RoomCollectionItem };
+export type Room = { [collectionName: string]: RoomCollection };
+export type Rooms = Room[][];
+
 const genKey = (x: number, y: number, itemName: string) => {
   return `${x}.${y}.${itemName}`;
 };
@@ -45,19 +49,30 @@ export default class Level {
   private _itemnNames: string[] = [];
   private _unsolvedItems: string[] = [];
   private _levelSolution: LevelSolution = {};
+  get solution() {
+    return this._levelSolution;
+  }
   private _levelMatrix: LevelMatrix = {};
   get matrix() {
     return this._levelMatrix;
   }
-  get rooms() {
-    const ret: { [itemName: string]: boolean }[][] = [];
+  get rooms(): Rooms {
+    const ret: Rooms = [];
     for (let x = 0; x < this._config.boundaries.x; x++) {
       ret[x] = [];
       for (let y = 0; y < this._config.boundaries.y; y++) {
-        for (const col of this._collectionNames) {
-          ret[x][y] = { [col]: {} };
-          const status = this._levelMatrix[genKey(x, y, itemName)];
-          ret[x][y] = { ...ret[x][y], [itemName]: status };
+        ret[x][y] = {};
+        for (const itemFullName of this._itemnNames) {
+          const [col, item] = itemFullName.split(".");
+          if (!ret[x][y][col]) ret[x][y][col] = {};
+          const matrixKey = genKey(x, y, itemFullName);
+          ret[x][y][col][item] = {
+            name: item,
+            fullName: itemFullName,
+            status: this._levelMatrix[matrixKey],
+            matrixKey,
+            icon: "",
+          };
         }
       }
     }
@@ -112,7 +127,7 @@ export default class Level {
     return false;
   }
   createRules() {
-    const maxTries = 20;
+    const maxTries = 200;
     let i = 0;
     const matrix = { ...this._levelMatrix };
     console.log(this._levelSolution);

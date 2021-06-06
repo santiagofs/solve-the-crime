@@ -37,7 +37,8 @@ export default defineComponent({
       }
     }
     store.commit("collections", collections);
-    console.log(store.state);
+    store.commit("matrix", level.matrix);
+    store.commit("solution", level.solution);
 
     // for (const itemConfig of collectionConfig) {
     //   const item = await Item.forge(itemConfig);

@@ -1,19 +1,18 @@
 <template>
   <div class="sc-room">
     <div>{{ x }}, {{ y }}</div>
-
     <!-- <div>{{room.floorNumber}}, {{room.roomNumber}}</div> -->
     <div
       class="sc-room__collection"
-      v-for="collection in room"
+      v-for="collection in grid"
       :key="collection"
     >
-      {{ collection }}
       <span
-        v-for="item in collection.items"
+        v-for="item in collection"
         :key="item.name"
-        :class="{ 'is-active': false }"
+        :class="{ 'is-active': item.status }"
         class="sc-room__collection-item"
+        @click="removeItem(item)"
       >
         <icon :src="item.icon" />
       </span>
@@ -21,32 +20,50 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, PropType, computed } from "vue";
-import _ from "lodash";
-import Icon from "./Icon.vue";
+// import _ from "lodash";
+
+import { defineComponent, PropType, computed, ComputedRef } from "vue";
 import { useStore } from "vuex";
+
+import Icon from "./Icon.vue";
+import { Room, RoomCollection, RoomCollectionItem } from "@/classes/level";
 
 export default defineComponent({
   name: "Room",
   components: { Icon },
   props: {
-    room: { type: Object, required: true },
+    room: { type: Object as PropType<Room>, required: true },
     x: Number,
     y: Number,
   },
   setup(props) {
     const store = useStore();
-    const grid = computed(() => {
-      return props.room.map((value: string) => {
-        const [col, item] = value.split(".");
-        return {
-          icon: store.state.collections[col][item],
-          status: props.room[value],
-        };
-      });
+    const grid: ComputedRef<Room> = computed(() => {
+      const ret: Room = {};
+      for (const col in props.room) {
+        ret[col] = { ...props.room[col] };
+        for (const item in props.room[col]) {
+          const matrixKey = props.room[col][item].matrixKey;
+          ret[col][item] = {
+            ...props.room[col][item],
+            status: store.state.matrix[matrixKey],
+            icon: store.state.collections[col][item],
+          };
+        }
+      }
+      return ret;
     });
+
+    const removeItem = (item: RoomCollectionItem) => {
+      store.commit("removeMatrixItem", {
+        ...item,
+        coord: { x: props.x, y: props.y },
+      });
+    };
+    // console.log(grid)
     return {
       grid,
+      removeItem,
     };
   },
 });
@@ -83,10 +100,12 @@ export default defineComponent({
       border: 1px solid #fafafa;
       padding: 5px;
       margin: 5px;
+      visibility: hidden;
     }
     .is-active {
-      border: 1px solid #f33;
-      color: #f66;
+      // border: 1px solid #f33;
+      // color: #f66;
+      visibility: visible;
     }
   }
 }
