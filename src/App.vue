@@ -3,15 +3,26 @@
     <!-- <router-link to="/">Home</router-link> |
     <router-link to="/scenario">About</router-link> -->
   </div>
-  <Suspense>
-    <template #default>
-      <router-view />
-    </template>
-    <template #fallback>
-      <span>I'm a loading screen, I'm waiting the view to be ready!</span>
-    </template>
-  </Suspense>
+  <router-view />
 </template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+
+export default defineComponent({
+  name: "App",
+  setup() {
+    // block
+    const store = useStore();
+    const router = useRouter();
+    store.dispatch("initialize").then(() => {
+      router.push({ path: "/map" });
+    });
+  },
+});
+</script>
 
 <style lang="scss">
 #app {
