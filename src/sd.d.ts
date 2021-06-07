@@ -18,6 +18,9 @@ type Coord = { x: number; y: number };
 type LevelMatrix = {
   [key: string]: boolean;
 };
+type ItemCoords = {
+  [key: string]: Coord[];
+};
 type LevelSolution = {
   [key: string]: Coord;
 };
@@ -29,6 +32,7 @@ type Level = {
   matrix: LevelMatrix;
   solution: LevelSolution;
   unsolvedItems: string[];
+  rules: Rule[];
 };
 type BoundariesIteratorCallback = (x: number, y: number) => void;
 
@@ -47,10 +51,10 @@ type CellCollectionItem = {
   fullName: string;
   matrixKey: string;
 };
-type CellCollection = { [itemName: string]: RoomCollectionItem };
+type CellCollection = { [itemName: string]: CellCollectionItem };
 
-type Cell = { [collectionName: string]: RoomCollection };
-type Cells = Room[][]; // sorted by coords
+type Cell = { [collectionName: string]: CellCollectionItem };
+type Board = Cell[][]; // sorted by coords
 
 type RuleDistance = number | "?";
 type RuleAxis = "x" | "y";
@@ -72,7 +76,7 @@ type Rule = {
 };
 
 // STORE
-type State = {
+type sdState = {
   collectionNames: string[];
   currentLevel: Level;
   icons: IconCollection;

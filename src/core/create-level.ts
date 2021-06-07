@@ -5,8 +5,10 @@ import createRule from "./create-rule";
 import applyRule from "./apply-rule";
 import boundariesIterator from "./boundaries-iterator";
 import enforceRules from "./enforce-rules";
+import matrixToItems from "./matrix-to-items";
+import isSolution from "./is-solution";
 
-export default (state: State, levelNumber: number): void => {
+export default (state: sdState, levelNumber: number): void => {
   state.currentLevel.number = levelNumber;
 
   const config = { ...store.state.levels[levelNumber - 1] };
@@ -15,7 +17,7 @@ export default (state: State, levelNumber: number): void => {
   const itemNames: string[] = [];
   for (const colName in config.collections) {
     const fullItemNames = _.shuffle(
-      config.collections[colName].map((item) => item[0])
+      config.collections[colName].map((item: ItemConfig) => item[0])
     ).slice(0, config.itemsPerCollection);
 
     for (const itemName of fullItemNames) {
@@ -50,8 +52,9 @@ export default (state: State, levelNumber: number): void => {
   // rules generation
   let solved = false,
     i = 0;
-  const maxTries = 10;
+  const maxTries = 100;
   const matrixClone = { ...matrix };
+
   const rules: Rule[] = [];
   do {
     i++;
@@ -69,20 +72,16 @@ export default (state: State, levelNumber: number): void => {
     );
     if (applyRule(rule, matrixClone, config.boundaries)) {
       rules.push(rule);
-      console.log("ejejey!!!");
-      enforceRules(rules, matrixClone);
+      enforceRules(rules, matrixClone, config.boundaries);
 
-      //   //   if (tempMap.coordsByItem(rule.a.fullName).length === 1) {
-      //   //     _.pull(this.unsolved, rule.a.fullName);
-      //   //   }
-      //   //   if (tempMap.coordsByItem(rule.b.fullName).length === 1) {
-      //   //     _.pull(this.unsolved, rule.b.fullName);
-      //   //   }
-      // } else {
-      //   console.log("rejected");
+      const itemCoords = matrixToItems(matrixClone);
+      if (itemCoords[rule.a].length === 1) _.pull(unsolvedItems, rule.a);
+      if (itemCoords[rule.b].length === 1) _.pull(unsolvedItems, rule.b);
+      solved = isSolution(itemCoords);
     }
   } while (!solved && i < maxTries);
-  solved = false;
+  state.currentLevel.rules = rules;
+
   console.log(
     "I shouod have a solution",
     solved

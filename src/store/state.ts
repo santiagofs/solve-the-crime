@@ -1,7 +1,7 @@
 // import { LevelMatrix, LevelSolution } from "@/classes/level";
 // import { LevelConfig, CollectionConfig } from '@/config/types'
 
-const state: State = {
+const state: sdState = {
   collectionNames: ["heroes", "villains"],
   levelCount: 1,
   levels: [],
@@ -10,6 +10,7 @@ const state: State = {
     itemNames: [],
     number: 1,
     matrix: {},
+    rules: [],
     solution: {},
     unsolvedItems: [],
   },

@@ -11,7 +11,7 @@ export default (
     callback({
       coord: { x, y },
       keyA: genKey(x, y, nameA),
-      keyB: genKey(x, y, nameA),
+      keyB: genKey(x, y, nameB),
       nameA,
       nameB,
     });

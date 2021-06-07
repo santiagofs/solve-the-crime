@@ -1,11 +1,14 @@
-import roomIterator from "./room-iterator";
-export default (matrix: LevelMatrix, boundaries: Coord): void => {
-  console.log(matrix, boundaries);
-};
+import { splitKey } from "./gen-keys";
 
-// const [maxX, maxY] = this.maxs;
-// for (let y = 0; y < maxY; y++) {
-//   for (let x = 0; x < maxX; x++) {
-//     callback({ x, y }, this._rooms[y][x]);
-//   }
-// }
+export default (matrix: LevelMatrix): ItemCoords => {
+  const ret: ItemCoords = {};
+  for (const key in matrix) {
+    if (!matrix[key]) continue;
+
+    const { x, y, fullName } = splitKey(key);
+    if (!ret[fullName]) ret[fullName] = [];
+    ret[fullName].push({ x, y });
+  }
+
+  return ret;
+};

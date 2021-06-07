@@ -1,38 +1,38 @@
-// import type { State } from './state'
-// type Commit = (mutationName: string, payload: any) => void
+import { ActionContext, createStore } from "vuex";
 
-// export const initialize = async ({commit:Commit, state:State}) => {
-//   const cols = state.collectionNames
-//   for (col of cols) {
-//     const config: [string, string][] = (
-//       await import(`@/config/collections/${colName}.ts`)
-//     ).default;
-//   }
-// }
+export default createStore({
+  actions: {
+    async initialize({ commit, state }: ActionContext<sdState, sdState>) {
+      const cols = state.collectionNames;
+      const icons: IconCollection = {};
 
-// export default {
-//   initialize
-// }
-// (arg: {
-//   coord: { x: number; y: number };
-//   keyA: string;
-//   keyB: string;
-//   nameA: string;
-//   nameB: string;
-// }) => void;
+      for (const col of cols) {
+        const config: [string, string][] = (
+          await import(`@/config/collections/${col}.ts`)
+        ).default;
 
-// const collections: { [colName: string]: { [itemName: string]: string } } =
-//       {};
-//     for (const colName of level.collectionNames) {
-//       const config: [string, string][] = (
-//         await import(`@/config/collections/${colName}.ts`)
-//       ).default;
-//       collections[colName] = {};
-//       for (const item of config) {
-//         const icon: string = await import("@/assets/icons/" + item[1]).then(
-//           (module) => module.default
-//         );
+        icons[col] = {};
+        for (const item of config) {
+          const icon: string = await import("@/assets/icons/" + item[1]).then(
+            (module) => module.default
+          );
 
-//         collections[colName][item[0]] = icon;
-//       }
-//     }
+          icons[col][item[0]] = icon;
+        }
+      }
+      commit("icons", icons);
+
+      const levels = [];
+      for (let level = 1; level <= state.levelCount; level++) {
+        const levelConfig: LevelConfig = (
+          await import(
+            `@/config/levels/level-${_.padStart(level.toString(), 2, "0")}.ts`
+          )
+        ).default;
+        levels.push(levelConfig);
+      }
+      commit("levels", levels);
+      return true;
+    },
+  },
+});

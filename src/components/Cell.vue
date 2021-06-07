@@ -26,44 +26,45 @@ import { defineComponent, PropType, computed, ComputedRef } from "vue";
 import { useStore } from "vuex";
 
 import Icon from "./Icon.vue";
-import { Room, RoomCollection, RoomCollectionItem } from "@/classes/level";
-
 export default defineComponent({
-  name: "Room",
+  name: "Cell",
   components: { Icon },
-  props: {
-    room: { type: Object as PropType<Room>, required: true },
-    x: Number,
-    y: Number,
-  },
+  // props: {
+  //   room: { type: Object as PropType<Room>, required: true },
+  //   x: Number,
+  //   y: Number,
+  // },
   setup(props) {
     const store = useStore();
-    const grid: ComputedRef<Room> = computed(() => {
-      const ret: Room = {};
-      for (const col in props.room) {
-        ret[col] = { ...props.room[col] };
-        for (const item in props.room[col]) {
-          const matrixKey = props.room[col][item].matrixKey;
-          ret[col][item] = {
-            ...props.room[col][item],
-            status: store.state.matrix[matrixKey],
-            icon: store.state.collections[col][item],
-          };
-        }
-      }
-      return ret;
-    });
+    // const grid: ComputedRef<Room> = computed(() => {
+    //   const ret: Room = {};
+    //   for (const col in props.room) {
+    //     ret[col] = { ...props.room[col] };
+    //     for (const item in props.room[col]) {
+    //       const matrixKey = props.room[col][item].matrixKey;
+    //       ret[col][item] = {
+    //         ...props.room[col][item],
+    //         status: store.state.matrix[matrixKey],
+    //         icon: store.state.collections[col][item],
+    //       };
+    //     }
+    //   }
+    //   return ret;
+    // });
 
-    const removeItem = (item: RoomCollectionItem) => {
-      store.commit("removeMatrixItem", {
-        ...item,
-        coord: { x: props.x, y: props.y },
-      });
-    };
-    // console.log(grid)
+    // const removeItem = (item: RoomCollectionItem) => {
+    //   store.commit("removeMatrixItem", {
+    //     ...item,
+    //     coord: { x: props.x, y: props.y },
+    //   });
+    // };
+    // // console.log(grid)
+    // return {
+    //   grid,
+    //   removeItem,
+    // };
     return {
-      grid,
-      removeItem,
+      store,
     };
   },
 });

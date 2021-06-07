@@ -3,17 +3,18 @@ import { createStore } from "vuex";
 import state from "./state";
 
 import createLevel from "@/core/create-level";
+import createBoard from "@/core/create-board";
 
 export default createStore({
   state,
   mutations: {
-    icons(state: State, icons: IconCollection) {
+    icons(state: sdState, icons: IconCollection) {
       state.icons = icons;
     },
-    levels(state: State, levels: LevelConfig[]) {
+    levels(state: sdState, levels: LevelConfig[]) {
       state.levels = levels;
     },
-    setLevel(state, levelNumber: number) {
+    setLevel(state: sdState, levelNumber: number) {
       createLevel(state, levelNumber);
       console.log(state.currentLevel);
     },
@@ -32,8 +33,28 @@ export default createStore({
     // },
   },
   modules: {},
+  getters: {
+    board(state): Board {
+      if (!state.currentLevel || !state.currentLevel.config) return [];
+      const boundaries = state.currentLevel.config.boundaries;
+      const itemNames = state.currentLevel.itemNames;
+      const matrix = state.currentLevel.matrix;
+      return createBoard(boundaries, itemNames, matrix);
+    },
+    rules(state): Rule[] {
+      // TODO: filter only rules that can change the board
+      return state.currentLevel.rules;
+    },
+    icon:
+      (state) =>
+      (name: string): string => {
+        const [colName, itemName] = name.split(".");
+        return state.icons[colName][itemName];
+      },
+  },
+  // actions:
   actions: {
-    async initialize({ commit }) {
+    async initialize({ commit, state }) {
       const cols = state.collectionNames;
       const icons: IconCollection = {};
 

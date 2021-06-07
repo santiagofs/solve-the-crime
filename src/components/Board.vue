@@ -2,9 +2,9 @@
   <div class="sc-scene">
     <div class="sc-scene__house">
       <table>
-        <tr v-for="(x, nx) in level.config.boundaries.x" :key="x">
-          <td v-for="(y, ny) in level.config.boundaries.y" :key="y">
-            <room :x="nx" :y="ny" :room="rooms[nx][ny]" />
+        <tr v-for="(x, nx) in boundaries.x" :key="x">
+          <td v-for="(y, ny) in boundaries.y" :key="y">
+            <cell :x="nx" :y="ny" />
           </td>
         </tr>
       </table>
@@ -12,7 +12,7 @@
 
     <div class="sc-scene__rules">
       <rule
-        v-for="(rule, ndx) in level.rules"
+        v-for="(rule, ndx) in rules"
         :key="ndx"
         :rule="rule"
         @click="applyRule(rule)"
@@ -26,64 +26,34 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed } from "vue";
+import { defineComponent, computed } from "vue";
+import { useStore } from "vuex";
 
-import Room from "@/components/Room.vue";
+import Cell from "@/components/Cell.vue";
 import Rule from "@/components/Rule.vue";
-import type Level from "@/classes/level";
-//import { Level, Scenario } from '../models'
 
 export default defineComponent({
   name: "Board",
-  components: { Room, Rule },
-  props: {
-    level: { type: Object as PropType<Level> },
-    collections: { type: Object },
+  components: {
+    Cell,
+    Rule,
   },
-  setup(props) {
-    const rooms = computed(() => (props.level ? props.level.rooms : []));
 
+  setup() {
+    const store = useStore();
+    const boundaries = computed(() => {
+      if (!store.state.currentLevel || !store.state.currentLevel.config) {
+        return { x: 0, y: 0 };
+      }
+      return store.state.currentLevel.config.boundaries;
+    });
     return {
-      rooms,
+      boundaries,
+      board: computed(() => store.getters.board),
+      _board: store.getters.board,
+      rules: computed(() => store.getters.rules),
     };
   },
-  // data() {
-  //   return {
-  //     scenario: new Scenario(this.level)
-  //   }
-  // },
-  // computed: {
-  //   grid() {
-  //     console.log('the grid')
-  //     return this.scenario.solution.rooms
-  //   },
-  //   rules() {
-  //     return [
-  //       { a: 0, b: 2, axis: 'x', distance: 1 },
-  //       { a: 1, b: 3, axis: 'y', distance: 1 },
-  //       { a: 0, b: 3, axis: 'y', distance: '?' }
-  //     ]
-  //   },
-  //   isUnique() {
-  //     return false
-  //     // return checkUniqueness(this.elements)
-  //   }
-  // },
-  // methods: {
-  //   applyRule(rule) {
-  //     this.scenario.solution.applyRule(rule)
-  //   },
-  //   createRule() {
-  //     this.scenario.solution.createRule()
-  //     this.scenario.solution.applyRules(false)
-  //   },
-  //   createRules() {
-  //     this.scenario.solution.createRules()
-  //   },
-  //   hint() {
-  //     this.scenario.solution.hint()
-  //   }
-  // }
 });
 </script>
 

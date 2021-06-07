@@ -23,7 +23,5 @@ export default (
     console.log("transpose");
     transposeRule(matrix, rule, boundaries);
   }
-
-  console.log(matrix);
   return !_.isEqual(matrix, clone);
 };

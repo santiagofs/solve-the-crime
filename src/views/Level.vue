@@ -1,7 +1,7 @@
 <template>
   <h1>Level {{ levelNumber }}</h1>
 
-  <board :level="level" :collections="collections" />
+  <board />
 </template>
 
 <script lang="ts">
@@ -9,17 +9,16 @@
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
 
-//import { Level } from "@/classes";
-//import Board from "@/components/Board.vue";
-// import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
+import Board from "@/components/Board.vue";
 
 export default defineComponent({
-  name: "Scenario",
+  name: "Level",
   components: {
-    //Board,
+    Board,
   },
   setup() {
     const store = useStore();
+
     // const level = await Level.forge(1);
     // const collections: { [colName: string]: { [itemName: string]: string } } =
     //   {};
@@ -48,6 +47,7 @@ export default defineComponent({
 
     return {
       levelNumber: store.state.currentLevel.number,
+      board: store.getters.board,
       // level,
       // collections,
     };

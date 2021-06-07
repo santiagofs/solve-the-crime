@@ -1,14 +1,18 @@
-// import applyRule from "./apply-rule";
+import applyRule from "./apply-rule";
 
-export default (rules: Rule[], matrix: LevelMatrix): void => {
-  console.log(rules, matrix);
-  //   let i = 0;
-  //   let changed: boolean;
-  //   do {
-  //     i++;
-  //     changed = false;
-  //     rules.forEach((rule) => {
-  //       changed = changed || this.applyRule(rule, matrix);
-  //     });
-  //   } while (changed && i < 100);
+export default (
+  rules: Rule[],
+  matrix: LevelMatrix,
+  boundaries: Coord
+): void => {
+  let i = 0,
+    changed: boolean;
+
+  do {
+    i++;
+    changed = false;
+    rules.forEach((rule) => {
+      changed = changed || applyRule(rule, matrix, boundaries);
+    });
+  } while (changed && i < 100);
 };
