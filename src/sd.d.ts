@@ -33,6 +33,7 @@ type Level = {
   solution: LevelSolution;
   unsolvedItems: string[];
   rules: Rule[];
+  errorCount: number;
 };
 type BoundariesIteratorCallback = (x: number, y: number) => void;
 
@@ -53,7 +54,7 @@ type CellCollectionItem = {
 };
 type CellCollection = { [itemName: string]: CellCollectionItem };
 
-type Cell = { [collectionName: string]: CellCollectionItem };
+type Cell = { [collectionName: string]: CellCollection };
 type Board = Cell[][]; // sorted by coords
 
 type RuleDistance = number | "?";

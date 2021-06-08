@@ -3,7 +3,9 @@
     <div class="sc-rule__item sc-rule__item-a">
       <icon :src="iconA" />
     </div>
-    <div class="sc-rule__distance">{{ rule.distance }}</div>
+    <div class="sc-rule__distance">
+      {{ rule.distance === 0 ? "=" : rule.distance }}
+    </div>
     <div class="sc-rule__item sc-rule__item-b">
       <icon :src="iconB" />
     </div>
@@ -20,14 +22,16 @@ export default defineComponent({
   components: { Icon },
   setup(props) {
     const store = useStore();
-    const mode = computed(() =>
-      props.rule.axis === "y" ? "is-horizontal" : "is-vertical"
-    );
+    const mode = computed(() => {
+      if (props.rule.distance === 0)
+        return props.rule.axis === "y" ? "is-horizontal" : "is-vertical";
+      return props.rule.axis === "y" ? "is-vertical" : "is-horizontal";
+    });
     const isSame = computed(() => props.rule.distance);
 
-    console.log("rule setup ====>", store.state.icons);
-    const iconA = store.getters.icon(props.rule.a);
-    const iconB = store.getters.icon(props.rule.b);
+    const iconA = computed(() => store.getters.icon(props.rule.a));
+    const iconB = computed(() => store.getters.icon(props.rule.b));
+    console.log(props.rule.a, iconA);
     return {
       mode,
       isSame,
@@ -40,6 +44,7 @@ export default defineComponent({
 <style lang="scss">
 .sc-rule {
   display: inline-flex;
+  justify-content: center;
   border: 1px solid #ccc;
   border-radius: 4px;
   margin: 5px;

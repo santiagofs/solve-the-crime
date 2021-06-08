@@ -3,7 +3,8 @@ import { genKey } from "./gen-keys";
 export default (
   boundaries: Coord,
   names: string[],
-  matrix: LevelMatrix
+  matrix: LevelMatrix,
+  icons: IconCollection
 ): Board => {
   const ret: Board = [];
   for (let x = 0; x < boundaries.x; x++) {
@@ -12,24 +13,19 @@ export default (
       ret[x][y] = {};
       for (const name of names) {
         const [col, item] = name.split(".");
-        //if (!ret[x][y][col]) ret[x][y][col] = {};
+        if (!ret[x][y][col]) ret[x][y][col] = {};
+
         const matrixKey = genKey(x, y, name);
-        const cellItem = {
+        const cellItem: CellCollectionItem = {
           name: item,
           fullName: name,
-          status: [matrixKey],
+          status: matrix[matrixKey],
           matrixKey,
-          icon: "",
+          icon: icons[col][item],
         };
 
-        //   const matrixKey = genKey(x, y, itemFullName);
-        //   ret[x][y][col][item] = {
-        //     name: item,
-        //     fullName: itemFullName,
-        //     status: this._levelMatrix[matrixKey],
-        //     matrixKey,
-        //     icon: "",
-        //   };
+        ret[x][y][col][name] = cellItem;
+        // ret[x][y][col][name] = cellItem
       }
     }
   }

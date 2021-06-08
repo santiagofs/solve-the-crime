@@ -13,15 +13,15 @@ export default (
   // apply the rule
 
   if (rule.distance === 0) {
-    console.log("zero!");
-    equalRule(matrix, rule, boundaries);
+    console.log("skip");
+    // equalRule(matrix, rule, boundaries);
   } else if (rule.distance == "?") {
-    console.log("trim");
     trimRule(matrix, rule, boundaries);
     //this._trim(matrix, rule);d
   } else {
-    console.log("transpose");
-    transposeRule(matrix, rule, boundaries);
+    console.log("skip");
+    //transposeRule(matrix, rule, boundaries);
   }
+
   return !_.isEqual(matrix, clone);
 };

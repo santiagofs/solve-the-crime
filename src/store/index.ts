@@ -4,6 +4,10 @@ import state from "./state";
 
 import createLevel from "@/core/create-level";
 import createBoard from "@/core/create-board";
+import isItemSolution from "@/core/is-item-solution";
+import isSolution from "@/core/is-solution";
+import matrixToItems from "@/core/matrix-to-items";
+import applyRule from "@/core/apply-rule";
 
 export default createStore({
   state,
@@ -17,6 +21,12 @@ export default createStore({
     setLevel(state: sdState, levelNumber: number) {
       createLevel(state, levelNumber);
       console.log(state.currentLevel);
+    },
+    incrementErrorCount(state: sdState) {
+      state.currentLevel.errorCount += 1;
+    },
+    removeItem(state: sdState, matrixKey: string) {
+      state.currentLevel.matrix[matrixKey] = false;
     },
     // matrix(state, matrix) {
     //   state.matrix = matrix;
@@ -39,11 +49,25 @@ export default createStore({
       const boundaries = state.currentLevel.config.boundaries;
       const itemNames = state.currentLevel.itemNames;
       const matrix = state.currentLevel.matrix;
-      return createBoard(boundaries, itemNames, matrix);
+      return createBoard(boundaries, itemNames, matrix, state.icons);
     },
     rules(state): Rule[] {
       // TODO: filter only rules that can change the board
-      return state.currentLevel.rules;
+      const matrix = state.currentLevel.matrix;
+      const config = state.currentLevel.config;
+      if (!matrix || !config) return state.currentLevel.rules;
+
+      const items = matrixToItems(matrix);
+
+      const allRules = state.currentLevel.rules;
+      return allRules.filter((rule) => {
+        const matrix = { ...state.currentLevel.matrix };
+        if (items[rule.a].length === 1)
+          return applyRule(rule, matrix, config.boundaries);
+        if (items[rule.b].length === 1)
+          return applyRule(rule, matrix, config.boundaries);
+        return items[rule.a].length > 1 || items[rule.b].length > 1;
+      });
     },
     icon:
       (state) =>
@@ -51,6 +75,18 @@ export default createStore({
         const [colName, itemName] = name.split(".");
         return state.icons[colName][itemName];
       },
+    solved(state): boolean {
+      const matrix = state.currentLevel.matrix;
+      const items = matrixToItems(matrix);
+      const solved = isSolution(items);
+      console.log(matrix, items, solved);
+      return solved;
+    },
+    // itemSolved: (state) =>
+    //   (name: string): boolean => {
+
+    //     return items[name].length === 1
+    //   }
   },
   // actions:
   actions: {
@@ -84,6 +120,15 @@ export default createStore({
         levels.push(levelConfig);
       }
       commit("levels", levels);
+      return true;
+    },
+    async removeItem({ commit, state }, matrixKey) {
+      if (isItemSolution(matrixKey, state.currentLevel.solution)) {
+        commit("incrementErrorCount");
+        console.log(state.currentLevel.errorCount);
+        return false;
+      }
+      commit("removeItem", matrixKey);
       return true;
     },
   },

@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-export default (a: RuleItem, b: RuleItem, explicitDistanceWeight = 0): Rule => {
+export default (a: RuleItem, b: RuleItem, explicitDistanceWeight = 1): Rule => {
   const axis: RuleAxis =
     a.x === b.x // in the same column?
       ? "y" // measure the distant in rows
@@ -16,12 +16,15 @@ export default (a: RuleItem, b: RuleItem, explicitDistanceWeight = 0): Rule => {
 
   if (distance === 0) return rule;
 
-  const weight = Math.floor(explicitDistanceWeight * 10);
-  const options: RuleDistance[] = [
-    ...Array(weight).fill(Math.abs(distance)),
-    ...Array(10 - weight).fill("?"),
-  ];
-
+  // const weight = Math.floor(explicitDistanceWeight * 10);
+  // const options: RuleDistance[] = [
+  //   ...Array(weight).fill(Math.abs(distance)),
+  //   ...Array(10 - weight).fill("?"),
+  // ];
+  const options = [Math.abs(distance), "?"];
   rule.distance = _.sample(options) as RuleDistance; //
+  // console.log(distance, options, axis, itemA, itemB,)
+  // console.log(rule)
+
   return rule;
 };

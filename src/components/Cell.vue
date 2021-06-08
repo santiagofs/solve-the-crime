@@ -4,15 +4,15 @@
     <!-- <div>{{room.floorNumber}}, {{room.roomNumber}}</div> -->
     <div
       class="sc-room__collection"
-      v-for="collection in grid"
-      :key="collection"
+      v-for="(collection, colkey) in cell"
+      :key="colkey"
     >
       <span
-        v-for="item in collection"
-        :key="item.name"
+        v-for="(item, itemkey) in collection"
+        :key="itemkey"
         :class="{ 'is-active': item.status }"
         class="sc-room__collection-item"
-        @click="removeItem(item)"
+        @click="removeItem(item.matrixKey)"
       >
         <icon :src="item.icon" />
       </span>
@@ -22,49 +22,38 @@
 <script lang="ts">
 // import _ from "lodash";
 
-import { defineComponent, PropType, computed, ComputedRef } from "vue";
+import { defineComponent, computed } from "vue";
 import { useStore } from "vuex";
 
 import Icon from "./Icon.vue";
 export default defineComponent({
   name: "Cell",
   components: { Icon },
-  // props: {
-  //   room: { type: Object as PropType<Room>, required: true },
-  //   x: Number,
-  //   y: Number,
-  // },
+  props: {
+    //   room: { type: Object as PropType<Room>, required: true },
+    x: Number,
+    y: Number,
+  },
   setup(props) {
     const store = useStore();
-    // const grid: ComputedRef<Room> = computed(() => {
-    //   const ret: Room = {};
-    //   for (const col in props.room) {
-    //     ret[col] = { ...props.room[col] };
-    //     for (const item in props.room[col]) {
-    //       const matrixKey = props.room[col][item].matrixKey;
-    //       ret[col][item] = {
-    //         ...props.room[col][item],
-    //         status: store.state.matrix[matrixKey],
-    //         icon: store.state.collections[col][item],
-    //       };
-    //     }
-    //   }
-    //   return ret;
-    // });
+    const cell = computed(() => {
+      if (props.x === undefined || props.y === undefined) return undefined;
+      return store.getters.board[props.x][props.y];
+    });
 
-    // const removeItem = (item: RoomCollectionItem) => {
-    //   store.commit("removeMatrixItem", {
-    //     ...item,
-    //     coord: { x: props.x, y: props.y },
-    //   });
-    // };
+    const removeItem = async (matrixKey: string) => {
+      const success = await store.dispatch("removeItem", matrixKey);
+      console.log(success);
+    };
     // // console.log(grid)
     // return {
     //   grid,
     //   removeItem,
     // };
     return {
-      store,
+      board: computed(() => store.getters.board),
+      cell,
+      removeItem,
     };
   },
 });

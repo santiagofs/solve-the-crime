@@ -2,8 +2,8 @@
   <div class="sc-scene">
     <div class="sc-scene__house">
       <table>
-        <tr v-for="(x, nx) in boundaries.x" :key="x">
-          <td v-for="(y, ny) in boundaries.y" :key="y">
+        <tr v-for="(y, ny) in boundaries.y" :key="y">
+          <td v-for="(x, nx) in boundaries.x" :key="x">
             <cell :x="nx" :y="ny" />
           </td>
         </tr>

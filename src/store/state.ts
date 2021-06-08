@@ -13,6 +13,7 @@ const state: sdState = {
     rules: [],
     solution: {},
     unsolvedItems: [],
+    errorCount: 0,
   },
   // matrix: {},
   // solution: {},

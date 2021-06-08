@@ -13,13 +13,18 @@ describe("Core Functions", () => {
   });
 
   it("gets min and max", () => {
-    let minA: number, maxB: number;
-    ({ minA, maxB } = trimRuleMinMax(matrix2x2, ruleYq, { x: 2, y: 2 }));
-    expect(minA).toEqual(0);
-    expect(maxB).toEqual(1);
-    ({ minA, maxB } = trimRuleMinMax(matrix3x3, ruleXq, { x: 3, y: 3 }));
-    expect(minA).toEqual(0);
-    expect(maxB).toEqual(2);
+    let values: { minA: number; maxB: number }[];
+    values = trimRuleMinMax(matrix2x2, ruleYq, { x: 2, y: 2 });
+    expect(values.length).toEqual(2);
+
+    expect(values[0]).toEqual({ minA: 0, maxB: 1 });
+    expect(values[1]).toEqual({ minA: 0, maxB: 1 });
+
+    values = trimRuleMinMax(matrix3x3, ruleXq, { x: 3, y: 3 });
+    expect(values.length).toEqual(3);
+    expect(values[0]).toEqual({ minA: 0, maxB: 2 });
+    expect(values[1]).toEqual({ minA: 0, maxB: 2 });
+    expect(values[2]).toEqual({ minA: 0, maxB: 2 });
   });
 
   it.only("trim vertical", () => {
@@ -39,16 +44,23 @@ describe("Core Functions", () => {
     clone2x2["1.0.heroes.hulk"] = false;
     expect(matrix2x2).toEqual(clone2x2);
 
-    const matrix3x3 = { ...matrixSample3x3 };
-    const clone3x3 = { ...matrixSample3x3 };
-    applyRule(rule, matrix3x3, { x: 3, y: 3 });
+    rule.axis = "x";
+    applyRule(rule, matrix2x2, { x: 2, y: 2 });
+    clone2x2["1.0.heroes.birdman"] = false;
+    clone2x2["1.1.heroes.birdman"] = false;
+    clone2x2["0.0.heroes.hulk"] = false;
+    clone2x2["0.1.heroes.hulk"] = false;
 
-    clone3x3["0.2.heroes.birdman"] = false;
-    clone3x3["1.2.heroes.birdman"] = false;
-    clone3x3["2.2.heroes.birdman"] = false;
-    clone3x3["0.0.heroes.hulk"] = false;
-    clone3x3["1.0.heroes.hulk"] = false;
-    clone3x3["2.0.heroes.hulk"] = false;
-    expect(matrix3x3).toEqual(clone3x3);
+    // const matrix3x3 = { ...matrixSample3x3 };
+    // const clone3x3 = { ...matrixSample3x3 };
+    // applyRule(rule, matrix3x3, { x: 3, y: 3 });
+
+    // clone3x3["0.2.heroes.birdman"] = false;
+    // clone3x3["1.2.heroes.birdman"] = false;
+    // clone3x3["2.2.heroes.birdman"] = false;
+    // clone3x3["0.0.heroes.hulk"] = false;
+    // clone3x3["1.0.heroes.hulk"] = false;
+    // clone3x3["2.0.heroes.hulk"] = false;
+    // expect(matrix3x3).toEqual(clone3x3);
   });
 });
